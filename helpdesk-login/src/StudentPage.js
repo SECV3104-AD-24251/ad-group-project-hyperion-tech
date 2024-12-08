@@ -1,23 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { ref, set, onValue, push } from "firebase/database";
-import { database } from "./firebaseConfig";
+import React, { useState, useEffect } from 'react';
+import { ref, onValue, push, set } from 'firebase/database';
+import { database } from './firebaseConfig';
+import Sidebar from './components/Sidebar';
+import ChatMessage from './components/ChatMessage';
+import ChatInput from './components/ChatInput';
+import './styles/Chat.css';
 
 const StudentPage = ({ name, goToProfile }) => {
   const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
-  const userId = "123"; // Example user ID, replace this with dynamic logic if needed.
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const userId = "123"; // In production, this should be the actual user ID
 
-  // Save a message to Firebase
-  const saveMessage = (message, sender) => {
-    const newMessageRef = push(ref(database, `messages/${userId}`));
-    set(newMessageRef, {
-      sender,
-      text: message,
-      timestamp: Date.now(),
-    });
-  };
-
-  // Fetch messages from Firebase in real-time
   useEffect(() => {
     const messageRef = ref(database, `messages/${userId}`);
     const unsubscribe = onValue(messageRef, (snapshot) => {
@@ -27,186 +20,90 @@ const StudentPage = ({ name, goToProfile }) => {
         : [];
       setMessages(loadedMessages);
     });
-    return () => unsubscribe(); // Cleanup on unmount
-  }, []);
+    return () => unsubscribe();
+  }, [userId]);
 
-  // Handle sending messages
-  const handleSend = () => {
-    if (!input.trim()) return;
-
-    // Save user message
-    saveMessage(input, "user");
-
-    // Generate bot response
-    const botResponse = getBotResponse(input);
-    setTimeout(() => saveMessage(botResponse, "bot"), 1000); // Add a delay for realism
-
-    setInput(""); // Clear input field
+  const saveMessage = (message, sender) => {
+    const newMessageRef = push(ref(database, `messages/${userId}`));
+    set(newMessageRef, {
+      sender,
+      text: message,
+      timestamp: Date.now(),
+    });
   };
 
-  // Simulate bot responses
+  const handleSendMessage = (message) => {
+    saveMessage(message, 'user');
+    
+    // Simulate bot response
+    setTimeout(() => {
+      const botResponse = getBotResponse(message);
+      saveMessage(botResponse, 'assistant');
+    }, 1000);
+  };
+
   const getBotResponse = (message) => {
     const lowerCaseMessage = message.toLowerCase();
-    if (lowerCaseMessage.includes("help")) {
-      return "Sure! What do you need help with?";
-    } else if (lowerCaseMessage.includes("schedule")) {
-      return "You can check your schedule in the university portal.";
-    } else if (lowerCaseMessage.includes("contact")) {
-      return "You can contact the admin office at admin@university.com.";
+    if (lowerCaseMessage.includes('amendment')) {
+      return "For questions regarding amendments, please visit: https://my.utm.my/";
+    } else if (lowerCaseMessage.includes('help')) {
+      return "How can I assist you with Faculty of Computing matters?";
+    } else if (lowerCaseMessage.includes('schedule')) {
+      return "You can check your class schedule in the UTM portal: https://my.utm.my/";
     } else {
-      return "I'm sorry, I didn't understand that. Could you please rephrase?";
+      return "I'm here to help with Faculty of Computing related questions. Could you please be more specific?";
     }
   };
 
-  return (
-    <div style={styles.container}>
-      <div style={styles.mainPage}>
-        <div style={styles.navbar}>
-          <div style={styles.menuIcon}>&#9776;</div>
-          <input type="text" placeholder="Search" style={styles.searchBar} />
-          <div style={styles.profileIcon} onClick={goToProfile}>
-            &#128100;
-          </div>
-        </div>
+  const handleNewChat = () => {
+    // Clear current chat messages
+    set(ref(database, `messages/${userId}`), null);
+  };
 
-        <div style={styles.chatContainer}>
-          <div style={styles.chatBox}>
-            {messages.map((msg, index) => (
-              <div
-                key={index}
-                style={
-                  msg.sender === "bot" ? styles.botMessage : styles.userMessage
-                }
-              >
-                {msg.text}
-              </div>
-            ))}
-          </div>
-          <div style={styles.inputContainer}>
-            <input
-              type="text"
-              placeholder="Type a message..."
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              style={styles.input}
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  return (
+    <div className="chat-container">
+      <div className="top-bar">
+        <button className="hamburger-button" onClick={toggleSidebar}>
+          <svg 
+            stroke="currentColor" 
+            fill="none" 
+            strokeWidth="2" 
+            viewBox="0 0 24 24" 
+            height="1.5em" 
+            width="1.5em" 
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <Sidebar
+        onNewChat={handleNewChat}
+        onProfileClick={goToProfile}
+        userName={name}
+        isOpen={isSidebarOpen}
+        onToggle={toggleSidebar}
+      />
+      <div className={`main-content ${isSidebarOpen ? 'shifted' : ''}`}>
+        <div className="chat-messages">
+          {messages.map((msg, index) => (
+            <ChatMessage
+              key={index}
+              message={msg.text}
+              type={msg.sender === 'assistant' ? 'assistant' : 'user'}
             />
-            <button onClick={handleSend} style={styles.sendButton}>
-              Send
-            </button>
-          </div>
+          ))}
         </div>
+        <ChatInput onSendMessage={handleSendMessage} />
       </div>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    height: "100vh",
-    width: "100vw",
-    fontFamily: "Arial, sans-serif",
-  },
-  navbar: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "#e6f7ff",
-    padding: "10px 20px",
-    height: "50px",
-    borderBottom: "1px solid #ccc",
-  },
-  menuIcon: {
-    fontSize: "20px",
-    cursor: "pointer",
-  },
-  searchBar: {
-    width: "60%",
-    padding: "5px",
-    borderRadius: "5px",
-    border: "1px solid #ccc",
-  },
-  profileIcon: {
-    fontSize: "20px",
-    cursor: "pointer",
-  },
-  chatContainer: {
-    flex: 1,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    padding: "20px",
-    backgroundColor: "#f9f9f9",
-  },
-  chatBox: {
-    flex: 1,
-    overflowY: "auto",
-    padding: "10px",
-    border: "1px solid #ccc",
-    borderRadius: "10px",
-    backgroundColor: "#fff",
-    marginBottom: "20px",
-  },
-  botMessage: {
-    textAlign: "left",
-    backgroundColor: "#e6f7ff",
-    padding: "10px",
-    borderRadius: "10px",
-    margin: "5px 0",
-  },
-  userMessage: {
-    textAlign: "right",
-    backgroundColor: "#dcf8c6",
-    padding: "10px",
-    borderRadius: "10px",
-    margin: "5px 0",
-  },
-  inputContainer: {
-    display: "flex",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    border: "1px solid #ccc",
-    borderRadius: "30px",
-    padding: "5px 10px",
-  },
-  input: {
-    flex: 1,
-    border: "none",
-    outline: "none",
-    padding: "10px",
-    borderRadius: "30px",
-  },
-  sendButton: {
-    marginLeft: "10px",
-    padding: "10px 20px",
-    backgroundColor: "#4285f4",
-    color: "#fff",
-    border: "none",
-    borderRadius: "20px",
-    cursor: "pointer",
-  },
-  profilePage: {
-    textAlign: "center",
-    padding: "20px",
-    backgroundColor: "#fff",
-    borderRadius: "10px",
-    boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-  },
-  button: {
-    padding: "10px 20px",
-    backgroundColor: "#4285f4",
-    color: "#fff",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-    margin: "5px",
-  },
-  mainPage: {
-    flex: 1,
-    display: "flex",
-    flexDirection: "column",
-  },
 };
 
 export default StudentPage;
