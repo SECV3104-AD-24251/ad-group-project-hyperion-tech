@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { ref, onValue, push, set } from 'firebase/database';
-import { database } from './firebaseConfig';
+import React, { useState, useEffect } from "react";
+import { ref, set, onValue, push } from "firebase/database";
+import { database } from "./firebaseConfig";
 import Sidebar from './components/Sidebar';
 import ChatMessage from './components/ChatMessage';
 import ChatInput from './components/ChatInput';
+import FAQPage from './FAQPage';
 import './styles/Chat.css';
 
 const StudentPage = ({ name, goToProfile }) => {
   const [messages, setMessages] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showFAQ, setShowFAQ] = useState(false);
   const userId = "123"; // In production, this should be the actual user ID
 
   useEffect(() => {
@@ -64,6 +66,14 @@ const StudentPage = ({ name, goToProfile }) => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  const toggleFAQ = () => {
+    setShowFAQ(!showFAQ);
+  };
+
+  if (showFAQ) {
+    return <FAQPage onBack={toggleFAQ} />;
+  }
+
   return (
     <div className="chat-container">
       <div className="top-bar">
@@ -82,6 +92,7 @@ const StudentPage = ({ name, goToProfile }) => {
             <line x1="3" y1="18" x2="21" y2="18"></line>
           </svg>
         </button>
+        <button className="faq-button" onClick={toggleFAQ}>FAQ</button>
       </div>
       <Sidebar
         onNewChat={handleNewChat}

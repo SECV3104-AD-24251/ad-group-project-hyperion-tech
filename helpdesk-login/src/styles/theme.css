@@ -1,13 +1,13 @@
 :root {
-  --primary-black: #1a1625;
-  --secondary-black: #241f31;
-  --accent-purple: #9966CC;
-  --accent-purple-hover: #B784E3;
-  --text-primary: #ffffff;
-  --text-secondary: #b3b3b3;
-  --message-user: #2a2438;
-  --message-assistant: #352f44;
-  --input-background: #2a2438;
-  --hover-color: rgba(153, 102, 204, 0.1);
-  --top-bar-color: #1b4332;
-}
+    --primary-black: #1a1625;
+    --secondary-black: #241f31;
+    --accent-purple: #9966CC;
+    --accent-purple-hover: #B784E3;
+    --text-primary: #ffffff;
+    --text-secondary: #b3b3b3;
+    --message-user: #2a2438;
+    --message-assistant: #352f44;
+    --input-background: #2a2438;
+    --hover-color: rgba(153, 102, 204, 0.1);
+    --top-bar-color: #1b4332;
+  }

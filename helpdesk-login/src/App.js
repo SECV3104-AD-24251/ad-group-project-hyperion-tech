@@ -1,21 +1,21 @@
+// App.js
 import React, { useState } from "react";
 import { signInWithPopup, signOut } from "firebase/auth";
 import { auth, googleProvider } from "./firebaseConfig";
-import StudentPage from "./StudentPage";
+import StudentPage from "../src/StudentPage";
 import AdminPage from "./AdminPage";
 import ProfilePage from "./ProfilePage";
-import { DUMMY_USER } from "./constants/dummyUser";
 import "./App.css";
 
 function App() {
   const [user, setUser] = useState(null);
-  const [currentPage, setCurrentPage] = useState("home");
+  const [currentPage, setCurrentPage] = useState("home"); // Manage navigation manually
 
   const handleGoogleLogin = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const email = result.user.email;
-
+      
       if (email.endsWith("@graduate.utm.my")) {
         setUser({ role: "student", name: result.user.displayName });
         setCurrentPage("student");
@@ -30,22 +30,16 @@ function App() {
     }
   };
 
-  const handleDummyLogin = () => {
-    setUser({ role: "student", name: DUMMY_USER.displayName });
-    setCurrentPage("student");
-  };
-
   const handleLogout = async () => {
     try {
       await signOut(auth);
       setUser(null);
-      setCurrentPage("home");
+      setCurrentPage("home"); // Redirect to the home page (login page)
     } catch (error) {
       console.error("Error during logout:", error);
     }
   };
-
-  const renderPage = () => {
+ const renderPage = () => {
     if (!user) {
       return (
         <div className="login-container">
@@ -77,14 +71,12 @@ function App() {
               </svg>
               Sign in with Google
             </button>
-            <button className="dummy-login-button" onClick={handleDummyLogin}>
-              Sign in as Dummy Student
-            </button>
           </div>
         </div>
       );
     }
 
+  
     switch (currentPage) {
       case "student":
         return <StudentPage name={user.name} goToProfile={() => setCurrentPage("profile")} />;
@@ -99,12 +91,19 @@ function App() {
             goBack={() => setCurrentPage(user.role === "student" ? "student" : "admin")}
           />
         );
+      case "FAQ" :
+        return (
+        <FAQPage
+          onLogout={handleLogout}
+          goBack={() => setCurrentPage(user.role === "student" ? "student" : "admin")}
+        />
+        );
       default:
-        return <div>Page not found</div>;
+        return <h1>Page not found</h1>;
     }
   };
 
-  return renderPage();
+  return <div>{renderPage()}</div>;
 }
 
 export default App;
