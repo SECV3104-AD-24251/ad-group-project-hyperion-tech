@@ -1,24 +1,29 @@
-
-import React, { useState } from "react";
-import { signInWithPopup } from "firebase/auth";
-import { auth, googleProvider } from "./firebaseConfig";
-import StudentPage from "./StudentPage";
-import AdminPage from "./AdminPage";
-import  "./App.css"
+import React, { useState } from "react"; 
+import { signInWithPopup, signOut } from "firebase/auth"; 
+import { auth, googleProvider } from "./firebaseConfig"; 
+import StudentPage from "./StudentPage"; 
+import AdminPage from "./AdminPage"; 
+import ProfilePage from "./ProfilePage"; 
+import FaqEditorPage from "./FaqEditorPage"; 
+import CategoryPage  from "./CateEditor"; // Import CategoryPage
+import "./App.css";
 
 function App() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null); 
+  const [currentPage, setCurrentPage] = useState("home");
+  const [categories, setCategories] = useState([]); // Assume this is fetched from Firebase
 
   const handleGoogleLogin = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const email = result.user.email;
 
-      // Conditional role assignment based on email domain
       if (email.endsWith("@graduate.utm.my")) {
         setUser({ role: "student", name: result.user.displayName });
-      } else if (email.endsWith("@utm.my")) {
+        setCurrentPage("student");
+      } else if (email.endsWith("@gmail.com")) {
         setUser({ role: "admin", name: result.user.displayName });
+        setCurrentPage("admin");
       } else {
         alert("Unauthorized email domain.");
       }
@@ -27,21 +32,92 @@ function App() {
     }
   };
 
-  if (user) {
-    return user.role === "student" ? (
-      <StudentPage name={user.name} />
-    ) : (
-      <AdminPage name={user.name} />
-    );
-  }
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      setUser(null);
+      setCurrentPage("home");
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
 
-  return (
-    <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h1> Welcome to FC
-      helpdesk </h1>
-      <button onClick={handleGoogleLogin}>Sign in with Google</button>
-    </div>
-  );
+  const handleAddCategory = (categoryName) => {
+    // Add category logic here (e.g., push to Firebase)
+    const newCategory = { id: Date.now(), name: categoryName };
+    setCategories([...categories, newCategory]);
+  };
+
+  const handleDeleteCategory = (categoryId) => {
+    // Delete category logic here (e.g., remove from Firebase)
+    setCategories(categories.filter((category) => category.id !== categoryId));
+  };
+
+  const handleEditCategory = (categoryId) => {
+    // Edit category logic here
+    const updatedCategories = categories.map((category) =>
+      category.id === categoryId ? { ...category, name: "Updated Category" } : category
+    );
+    setCategories(updatedCategories);
+  };
+
+  const renderPage = () => {
+    if (!user) {
+      return (
+        <div className="login-container">
+          <div className="login-box">
+            <h1>FC Helpdesk</h1>
+            <button className="google-login-button" onClick={handleGoogleLogin}>
+              Sign in with Google
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    switch (currentPage) {
+      case "student":
+        return <StudentPage name={user.name} goToProfile={() => setCurrentPage("profile")} />;
+      case "admin":
+        return (
+          <AdminPage
+            name={user.name}
+            goToProfile={() => setCurrentPage("profile")}
+            goToFaqEditor={() => setCurrentPage("faqEditor")}
+            goToCategoryPage={() => setCurrentPage("category")} // Navigation to Category Page
+          />
+        );
+      case "profile":
+        return (
+          <ProfilePage
+            name={user.name}
+            role={user.role}
+            onLogout={handleLogout}
+            goBack={() => setCurrentPage(user.role === "student" ? "student" : "admin")}
+          />
+        );
+      case "faqEditor":
+        return (
+          <FaqEditorPage
+            onLogout={handleLogout}
+            goBack={() => setCurrentPage("admin")}
+          />
+        );
+      case "category":
+        return (
+          <CategoryPage
+            categories={categories}
+            onAddCategory={handleAddCategory}
+            onDeleteCategory={handleDeleteCategory}
+            onEditCategory={handleEditCategory}
+          />
+        );
+      default:
+        return <h1>Page not found</h1>;
+    }
+  };
+
+  return <div>{renderPage()}</div>;
 }
 
 export default App;

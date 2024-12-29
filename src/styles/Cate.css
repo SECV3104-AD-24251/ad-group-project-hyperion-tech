@@ -1,0 +1,105 @@
+
+.top-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background-color: var(--top-bar-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .main-content {
+    display: flex;
+    flex-direction: column;
+    margin-top: 60px;
+    padding: 20px;
+  }
+  
+  .faq-form input,
+  .faq-form select {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+  }
+  
+  .faq-form button {
+    padding: 8px 15px;
+    background-color: #2e0456;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    
+  }
+  
+  .faq-form button:hover {
+    background-color: #4c7097;
+  }
+  
+  .category-list table,
+  .faq-list table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .styled-table th,
+  .styled-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .styled-table th {
+    background-color: var(--accent-purple);
+    color: #fff;
+  }
+  
+  .styled-table td {
+    background-color: #f9f9f9;
+  }
+  
+  .delete-button,
+  .edit-button {
+    padding: 5px 10px;
+    background-color: #260140;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .delete-button:hover,
+  .edit-button:hover {
+    background-color: #3f0668;
+  }
+  
+  .add-category {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .add-category input {
+    flex: 1;
+    padding: 8px;
+    border-radius: 5px;
+  }
+  
+  .add-category button {
+    padding: 8px 15px;
+    background-color: #2e0456;
+    color: white;
+    border: none;
+    border-radius: 5px;
+  }
+  
+  .add-category button:hover {
+    background-color: #2a004c;
+  }
+  
