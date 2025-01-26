@@ -12,7 +12,7 @@ import "./App.css";
 function App() {
   const [user, setUser] = useState(null); 
   const [currentPage, setCurrentPage] = useState("home");
-  const [categories, setCategories] = useState([]); // Assume this is fetched from Firebase
+  const [categories, setCategories] = useState([]);
 
   const handleGoogleLogin = async () => {
     try {
@@ -52,7 +52,7 @@ function App() {
   };
 
   const handleDeleteCategory = (categoryId) => {
-    // Delete category logic here (e.g., remove from Firebase)
+    
     setCategories(categories.filter((category) => category.id !== categoryId));
   };
 
