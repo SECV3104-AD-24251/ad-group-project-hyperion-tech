@@ -1,387 +1,4 @@
 
-/* import React, { useState } from "react";
-import { ref, set, push } from "firebase/database";
-import { database } from "./firebaseConfig";
-import Sidebar from './components/Sidebar';
-import ChatMessage from './components/ChatMessage';
-import ChatInput from './components/ChatInput';
-import FaqEditorPage from './FaqEditorPage';
-import CateEditor from './CateEditor';
-import './styles/Chat.css';
-
-const AdminPage = ({ name, goToProfile }) => {
-  const [messages, setMessages] = useState([]);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [activeEditor, setActiveEditor] = useState(null); // null, 'faq', or 'category'
-  const adminId = "admin123"; // Replace with actual admin ID logic in production
-
-  // Save message to Firebase
-  const saveMessage = async (path, messageObj) => {
-    try {
-      const newMessageRef = push(ref(database, path));
-      await set(newMessageRef, messageObj);
-    } catch (error) {
-      console.error(`Error saving message to ${path}:`, error);
-    }
-  };
-
-  const handleSendMessage = (message) => {
-    if (!message) return;
-
-    // Save user message to Firebase
-    saveMessage(`adminMessages/${adminId}`, {
-      sender: "user",
-      text: message,
-      timestamp: Date.now(),
-    });
-
-    // Simulate bot response
-    setTimeout(() => {
-      saveMessage(`adminMessages/${adminId}`, {
-        sender: "assistant",
-        text: "This is an automated response for admin queries.",
-        timestamp: Date.now(),
-      });
-    }, 1000);
-  };
-
-  const handleNewChat = async () => {
-    try {
-      await set(ref(database, `adminMessages/${adminId}`), null);
-      setMessages([]);
-    } catch (error) {
-      console.error("Error clearing chat:", error);
-    }
-  };
-
-  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
-
-  // Editor navigation handlers
-  const openFaqEditor = () => setActiveEditor('faq');
-  const openCategoryEditor = () => setActiveEditor('category');
-  const closeEditor = () => setActiveEditor(null);
-
-  // Render the active editor if any
-  if (activeEditor === 'faq') {
-    return <FaqEditorPage onBack={closeEditor} />;
-  }
-  if (activeEditor === 'category') {
-    return <CateEditor onBack={closeEditor} />;
-  }
-
-  return (
-    <div className="chat-container">
-      <div className="top-bar">
-        <button className="hamburger-button" onClick={toggleSidebar}>
-          <svg
-            stroke="currentColor"
-            fill="none"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-            height="1.5em"
-            width="1.5em"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-          </svg>
-        </button>
-        <div className="editor-buttons">
-          <button className="faq-button" onClick={openFaqEditor}>
-            Manage FAQs
-          </button>
-          <button className="faq-button" onClick={openCategoryEditor}>
-            Manage Categories
-          </button>
-        </div>
-      </div>
-      <Sidebar
-        onNewChat={handleNewChat}
-        onProfileClick={goToProfile}
-        userName={name}
-        isOpen={isSidebarOpen}
-        onToggle={toggleSidebar}
-      />
-      <div className={`main-content ${isSidebarOpen ? 'shifted' : ''}`}>
-        <div className="chat-messages">
-          {messages.map((msg, index) => (
-            <ChatMessage
-              key={index}
-              message={msg.text}
-              type={msg.sender === "assistant" ? "assistant" : "user"}
-            />
-          ))}
-        </div>
-        <ChatInput onSendMessage={handleSendMessage} />
-      </div>
-    </div>
-  );
-};
-
-export default AdminPage; */
-/*
-import React, { useState } from "react";
-import { ref, set, push } from "firebase/database";
-import { database } from "./firebaseConfig";
-import Sidebar from './components/Sidebar';
-import ChatMessage from './components/ChatMessage';
-import ChatInput from './components/ChatInput';
-import FaqEditorPage from './FaqEditorPage';
-import CateEditor from './CateEditor';
-import './styles/Chat.css';
-
-const AdminPage = ({ name, goToProfile }) => {
-  const [messages, setMessages] = useState([]);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [activeEditor, setActiveEditor] = useState(null); // null, 'faq', or 'category'
-  const adminId = "admin123"; // Replace with actual admin ID logic in production
-
-  // Save message to Firebase
-  const saveMessage = async (path, messageObj) => {
-    try {
-      const newMessageRef = push(ref(database, path));
-      await set(newMessageRef, messageObj);
-    } catch (error) {
-      console.error(`Error saving message to ${path}:`, error);
-    }
-  };
-
-  const handleSendMessage = (message) => {
-    if (!message) return;
-
-    // Save user message to Firebase
-    saveMessage(`adminMessages/${adminId}`, {
-      sender: "user",
-      text: message,
-      timestamp: Date.now(),
-    });
-
-    // Simulate bot response
-    setTimeout(() => {
-      saveMessage(`adminMessages/${adminId}`, {
-        sender: "assistant",
-        text: "This is an automated response for admin queries.",
-        timestamp: Date.now(),
-      });
-    }, 1000);
-  };
-
-  const handleNewChat = async () => {
-    try {
-      await set(ref(database, `adminMessages/${adminId}`), null);
-      setMessages([]);
-    } catch (error) {
-      console.error("Error clearing chat:", error);
-    }
-  };
-
-  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
-
-  // Editor navigation handlers
-  const openFaqEditor = () => setActiveEditor('faq');
-  const openCategoryEditor = () => setActiveEditor('category');
-  const closeEditor = () => setActiveEditor(null);
-
-  // Render the active editor if any
-  if (activeEditor === 'faq') {
-    return <FaqEditorPage onBack={closeEditor} />;
-  }
-  if (activeEditor === 'category') {
-    return <CateEditor onBack={closeEditor} />;
-  }
-
-  return (
-    <div className="chat-container">
-      <div className="top-bar">
-        <button className="hamburger-button" onClick={toggleSidebar}>
-          <svg
-            stroke="currentColor"
-            fill="none"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-            height="1.5em"
-            width="1.5em"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-          </svg>
-        </button>
-        <div className="editor-buttons">
-          <button className="faq-button" onClick={openFaqEditor}>
-            Manage FAQs
-          </button>
-          <button className="faq-button" onClick={openCategoryEditor}>
-            Manage Categories
-          </button>
-          <button
-            className="faq-button"
-            onClick={() => window.open('http://localhost:5173', '_blank')}
-          >
-            Chat History
-          </button>
-        </div>
-      </div>
-      <Sidebar
-        onNewChat={handleNewChat}
-        onProfileClick={goToProfile}
-        userName={name}
-        isOpen={isSidebarOpen}
-        onToggle={toggleSidebar}
-      />
-      <div className={`main-content ${isSidebarOpen ? 'shifted' : ''}`}>
-        <div className="chat-messages">
-          {messages.map((msg, index) => (
-            <ChatMessage
-              key={index}
-              message={msg.text}
-              type={msg.sender === "assistant" ? "assistant" : "user"}
-            />
-          ))}
-        </div>
-        <ChatInput onSendMessage={handleSendMessage} />
-      </div>
-    </div>
-  );
-};
-
-export default AdminPage;
-*/
-// AdminPage.js
-// AdminPage.js
-/*
-import React, { useState, useEffect } from "react";
-import { ref, set, onValue, off, push } from "firebase/database";
-import { database } from "./firebaseConfig";
-import Sidebar from "./components/Sidebar";
-import ChatMessage from "./components/ChatMessage";
-import ChatInput from "./components/ChatInput";
-import FaqEditorPage from "./FaqEditorPage";
-import CateEditor from "./CateEditor";
-import "./styles/Chat.css";
-
-const AdminPage = ({ name, goToProfile }) => {
-  const [messages, setMessages] = useState([]);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [activeEditor, setActiveEditor] = useState(null); // null, 'faq', or 'category'
-  const adminId = "admin123"; // Example admin ID
-  const chatId = "123_admin123"; // Shared chat ID between student and admin
-
-  // Load messages from Firebase
-  useEffect(() => {
-    const messageRef = ref(database, `chats/${chatId}`);
-    const handleValueChange = (snapshot) => {
-      const data = snapshot.val();
-      const loadedMessages = data
-        ? Object.values(data).sort((a, b) => a.timestamp - b.timestamp)
-        : [];
-      setMessages(loadedMessages);
-    };
-
-    onValue(messageRef, handleValueChange);
-    return () => off(messageRef);
-  }, [chatId]);
-
-  // Save message to Firebase
-  const saveMessage = async (path, messageObj) => {
-    try {
-      const newMessageRef = push(ref(database, path));
-      await set(newMessageRef, messageObj);
-    } catch (error) {
-      console.error(`Error saving message to ${path}:`, error);
-    }
-  };
-
-  const handleSendMessage = (message) => {
-    if (!message) return;
-    saveMessage(`chats/${chatId}`, {
-      sender: "admin",
-      text: message,
-      timestamp: Date.now(),
-    });
-  };
-
-  const handleNewChat = async () => {
-    try {
-      await set(ref(database, `chats/${chatId}`), null);
-      setMessages([]);
-    } catch (error) {
-      console.error("Error clearing chat:", error);
-    }
-  };
-
-  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
-
-  const openFaqEditor = () => setActiveEditor("faq");
-  const openCategoryEditor = () => setActiveEditor("category");
-  const closeEditor = () => setActiveEditor(null);
-
-  if (activeEditor === "faq") {
-    return <FaqEditorPage onBack={closeEditor} />;
-  }
-  if (activeEditor === "category") {
-    return <CateEditor onBack={closeEditor} />;
-  }
-
-  return (
-    <div className="chat-container">
-      <div className="top-bar">
-        <button className="hamburger-button" onClick={toggleSidebar}>
-          { <svg
-            stroke="currentColor"
-            fill="none"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-            height="1.5em"
-            width="1.5em"
-            xmlns="http://www.w3.org/2000/svg"
-            >
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-            </svg>}
-        </button>
-        <div className="editor-buttons">
-          <button className="faq-button" onClick={openFaqEditor}>
-            Manage FAQs
-          </button>
-          <button className="faq-button" onClick={openCategoryEditor}>
-            Manage Categories
-          </button>
-          <button
-            className="faq-button"
-            onClick={() => window.open("http://localhost:5173", "_blank")}
-          >
-            Chat History
-          </button>
-        </div>
-      </div>
-      <Sidebar
-        onNewChat={handleNewChat}
-        onProfileClick={goToProfile}
-        userName={name}
-        isOpen={isSidebarOpen}
-        onToggle={toggleSidebar}
-      />
-      <div className={`main-content ${isSidebarOpen ? "shifted" : ""}`}>
-        <div className="chat-messages">
-          {messages.map((msg, index) => (
-            <ChatMessage
-              key={index}
-              message={msg.text}
-              type={msg.sender === "student" ? "user" : "assistant"}
-            />
-          ))}
-        </div>
-        <ChatInput onSendMessage={handleSendMessage} />
-      </div>
-    </div>
-  );
-};
-
-export default AdminPage;*/
 import React, { useState, useEffect } from "react";
 import { ref, set, onValue, off, push } from "firebase/database";
 import { database } from "./firebaseConfig";
@@ -457,6 +74,53 @@ const AdminPage = ({ name, goToProfile }) => {
   // Handle navigating to the notification page
   const openNotificationsPage = () => setShowNotifications(true);
   const closeNotificationsPage = () => setShowNotifications(false);
+// Botpress Webchat Integration
+useEffect(() => {
+  const script1 = document.createElement("script");
+  const script2 = document.createElement("script");
+
+  script1.src = "https://cdn.botpress.cloud/webchat/v2.2/inject.js";
+  script1.async = true;
+  document.body.appendChild(script1);
+
+  script2.src = "https://files.bpcontent.cloud/2025/01/17/03/20250117034324-A8NYQIIO.js";
+  script2.async = true;
+  document.body.appendChild(script2);
+
+  script2.onload = () => {
+    console.log("Botpress Webchat script loaded for Admin.");
+    if (window.botpressWebChat) {
+      window.botpressWebChat.init();
+
+      // Add event listener for Botpress messages
+      window.botpressWebChat.onEvent((event) => {
+        console.log("Botpress Event Captured:", event);
+        if (event.type === "message") {
+          const { text, user, metadata } = event.payload;
+          const sender = user === "bot" ? "assistant" : "admin";
+          const messageObj = {
+            sender,
+            text,
+            timestamp: Date.now(),
+            metadata,
+          };
+
+          console.log("Message to save:", messageObj);
+          saveMessage(`botpressMessages/admin`, messageObj);
+        }
+      });
+    }
+  };
+
+  script1.onerror = script2.onerror = () => {
+    console.error("Failed to load Botpress Webchat scripts for Admin.");
+  };
+
+  return () => {
+    if (document.body.contains(script1)) document.body.removeChild(script1);
+    if (document.body.contains(script2)) document.body.removeChild(script2);
+  };
+}, []);
 
   if (showNotifications) {
     return <NotificationsCustomizationPage onBack={closeNotificationsPage} />;
@@ -534,5 +198,6 @@ const AdminPage = ({ name, goToProfile }) => {
 };
 
 export default AdminPage;
+
 
 
